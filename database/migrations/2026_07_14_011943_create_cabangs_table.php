@@ -6,20 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('cabangs', function (Blueprint $table) {
             $table->id();
+            $table->string('kode_cabang')->unique();
+            $table->string('nama_cabang');
+            $table->enum('tipe', ['induk', 'anak'])->default('induk');
+            $table->foreignId('parent_id')->nullable()->constrained('cabangs')->nullOnDelete();
+            $table->string('alamat')->nullable();
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('cabangs');
