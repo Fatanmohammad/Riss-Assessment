@@ -6,20 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('laporans', function (Blueprint $table) {
             $table->id();
+            $table->enum('jenis', ['bulanan', 'triwulan']);
+            $table->string('periode'); // contoh: 2026-07 atau 2026-Q3
+            $table->foreignId('cabang_id')->nullable()->constrained('cabangs')->nullOnDelete();
+            $table->foreignId('ra_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('file_path')->nullable();
+            $table->foreignId('dibuat_oleh')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('laporans');
