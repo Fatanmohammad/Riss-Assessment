@@ -24,4 +24,9 @@ class Bidang extends Model
     {
         return $this->hasMany(JadwalAudit::class);
     }
+
+    public function pertanyaanKka()
+    {
+        return $this->hasMany(PertanyaanKka::class);
+    }
 }

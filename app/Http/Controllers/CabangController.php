@@ -31,11 +31,12 @@ class CabangController extends Controller
         $this->pastikanPusat();
 
         $validated = $request->validate([
-            'kode_cabang'  => ['required', 'string', 'max:20', 'unique:cabangs,kode_cabang'],
-            'nama_cabang'  => ['required', 'string', 'max:255'],
-            'alamat'       => ['nullable', 'string'],
-            'kota'         => ['nullable', 'string', 'max:100'],
-            'status'       => ['nullable', 'in:aktif,nonaktif'],
+            'kode_cabang' => ['required', 'string', 'max:20', 'unique:cabangs,kode_cabang'],
+            'nama_cabang' => ['required', 'string', 'max:255'],
+            'tipe'        => ['required', 'in:induk,anak'],
+            'parent_id'   => ['nullable', 'exists:cabangs,id'],
+            'alamat'      => ['nullable', 'string'],
+            'aktif'       => ['boolean'],
         ]);
 
         $cabang = Cabang::create($validated);
@@ -47,7 +48,7 @@ class CabangController extends Controller
 
     public function show(Cabang $cabang)
     {
-        $cabang->load('jadwalAudits');
+        $cabang->load(['jadwalAudits', 'children']);
 
         return view('cabang.show', compact('cabang'));
     }
@@ -56,7 +57,9 @@ class CabangController extends Controller
     {
         $this->pastikanPusat();
 
-        return view('cabang.edit', compact('cabang'));
+        $indukList = Cabang::where('tipe', 'induk')->where('id', '!=', $cabang->id)->get();
+
+        return view('cabang.edit', compact('cabang', 'indukList'));
     }
 
     public function update(Request $request, Cabang $cabang)
@@ -64,11 +67,12 @@ class CabangController extends Controller
         $this->pastikanPusat();
 
         $validated = $request->validate([
-            'kode_cabang'  => ['required', 'string', 'max:20', 'unique:cabangs,kode_cabang,' . $cabang->id],
-            'nama_cabang'  => ['required', 'string', 'max:255'],
-            'alamat'       => ['nullable', 'string'],
-            'kota'         => ['nullable', 'string', 'max:100'],
-            'status'       => ['nullable', 'in:aktif,nonaktif'],
+            'kode_cabang' => ['required', 'string', 'max:20', 'unique:cabangs,kode_cabang,' . $cabang->id],
+            'nama_cabang' => ['required', 'string', 'max:255'],
+            'tipe'        => ['required', 'in:induk,anak'],
+            'parent_id'   => ['nullable', 'exists:cabangs,id'],
+            'alamat'      => ['nullable', 'string'],
+            'aktif'       => ['boolean'],
         ]);
 
         $cabang->update($validated);

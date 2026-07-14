@@ -6,18 +6,15 @@ use App\Http\Requests\StoreJadwalAuditRequest;
 use App\Models\Bidang;
 use App\Models\Cabang;
 use App\Models\JadwalAudit;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class JadwalAuditController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user  = Auth::user();
+        $query = JadwalAudit::with(['cabang', 'bidang', 'dibuatOleh']);
 
-        $query = JadwalAudit::with(['cabang', 'bidang', 'ketuaTim']);
-
-        // Staf cabang hanya melihat jadwal audit untuk cabangnya sendiri.
         if ($user->isCabang()) {
             $query->where('cabang_id', $user->cabang_id);
         }
@@ -31,35 +28,29 @@ class JadwalAuditController extends Controller
     {
         $this->pastikanPusat();
 
-        $cabangs = Cabang::where('status', 'aktif')->orderBy('nama_cabang')->get();
+        $cabangs = Cabang::where('aktif', true)->orderBy('nama_cabang')->get();
         $bidangs = Bidang::orderBy('nama_bidang')->get();
-        $users   = User::orderBy('name')->get();
 
-        return view('jadwal-audit.create', compact('cabangs', 'bidangs', 'users'));
+        return view('jadwal-audit.create', compact('cabangs', 'bidangs'));
     }
 
     public function store(StoreJadwalAuditRequest $request)
     {
         $this->pastikanPusat();
 
-        $validated = $request->validated();
-        $anggotaTim = $validated['anggota_tim'] ?? [];
-        unset($validated['anggota_tim']);
+        $validated                = $request->validated();
+        $validated['dibuat_oleh'] = Auth::id();
 
         $jadwalAudit = JadwalAudit::create($validated);
 
-        if (!empty($anggotaTim)) {
-            $jadwalAudit->anggotaTim()->sync($anggotaTim);
-        }
-
         return redirect()
-            ->route('jadwal-audit.index')
+            ->route('jadwal-audit.show', $jadwalAudit)
             ->with('success', 'Jadwal audit berhasil dibuat.');
     }
 
     public function show(JadwalAudit $jadwalAudit)
     {
-        $jadwalAudit->load(['cabang', 'bidang', 'ketuaTim', 'anggotaTim', 'kkas', 'laporan']);
+        $jadwalAudit->load(['cabang', 'bidang', 'dibuatOleh', 'kkas']);
 
         return view('jadwal-audit.show', compact('jadwalAudit'));
     }
@@ -70,26 +61,18 @@ class JadwalAuditController extends Controller
 
         $cabangs = Cabang::orderBy('nama_cabang')->get();
         $bidangs = Bidang::orderBy('nama_bidang')->get();
-        $users   = User::orderBy('name')->get();
 
-        $jadwalAudit->load('anggotaTim');
-
-        return view('jadwal-audit.edit', compact('jadwalAudit', 'cabangs', 'bidangs', 'users'));
+        return view('jadwal-audit.edit', compact('jadwalAudit', 'cabangs', 'bidangs'));
     }
 
     public function update(StoreJadwalAuditRequest $request, JadwalAudit $jadwalAudit)
     {
         $this->pastikanPusat();
 
-        $validated = $request->validated();
-        $anggotaTim = $validated['anggota_tim'] ?? [];
-        unset($validated['anggota_tim']);
-
-        $jadwalAudit->update($validated);
-        $jadwalAudit->anggotaTim()->sync($anggotaTim);
+        $jadwalAudit->update($request->validated());
 
         return redirect()
-            ->route('jadwal-audit.index')
+            ->route('jadwal-audit.show', $jadwalAudit)
             ->with('success', 'Jadwal audit berhasil diperbarui.');
     }
 
@@ -104,10 +87,6 @@ class JadwalAuditController extends Controller
             ->with('success', 'Jadwal audit berhasil dihapus.');
     }
 
-    /**
-     * Hanya SKAI Pusat yang boleh membuat/mengubah/menghapus jadwal audit;
-     * staf cabang hanya menerima jadwal yang sudah ditentukan Pusat.
-     */
     private function pastikanPusat(): void
     {
         if (! Auth::user()->isPusat()) {

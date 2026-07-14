@@ -13,13 +13,11 @@ class DashboardController extends Controller
     public function index()
     {
         $summary = [
-            'jadwal_berjalan'     => JadwalAudit::where('status', 'berjalan')->count(),
-            'kka_menunggu_review' => Kka::where('status', 'diajukan')->count(),
-            'temuan_terbuka'      => Temuan::where('status', 'terbuka')->count(),
-            'tindak_lanjut_lewat' => TindakLanjut::where('status', '!=', 'selesai')
-                ->where('target_tanggal', '<', now())
-                ->count(),
-            'flag_baru'           => FlagKejanggalan::where('status', 'baru')->count(),
+            'jadwal_berjalan'     => JadwalAudit::where('status', 'berlangsung')->count(),
+            'kka_menunggu_review' => Kka::where('status', 'submitted')->count(),
+            'temuan_baru'         => Temuan::where('status', 'baru')->count(),
+            'flag_belum_ditindak' => FlagKejanggalan::where('status', 'belum_ditindaklanjuti')->count(),
+            'tindak_lanjut_proses'=> TindakLanjut::where('status', 'proses')->count(),
         ];
 
         $temuanTerbaru = Temuan::with(['kka.jadwalAudit.cabang'])

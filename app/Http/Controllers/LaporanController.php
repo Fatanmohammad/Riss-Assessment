@@ -3,26 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLaporanRequest;
-use App\Models\JadwalAudit;
+use App\Models\Cabang;
 use App\Models\Laporan;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Hanya SKAI Pusat yang berwenang menerbitkan Laporan hasil audit.
- * Staf cabang hanya bisa melihat laporan terkait cabangnya sendiri.
- */
 class LaporanController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $query = Laporan::with(['jadwalAudit.cabang', 'pembuat']);
+        $user  = Auth::user();
+        $query = Laporan::with(['cabang', 'pembuat']);
 
         if ($user->isCabang()) {
-            $query->whereHas('jadwalAudit', function ($q) use ($user) {
-                $q->where('cabang_id', $user->cabang_id);
-            });
+            $query->where('cabang_id', $user->cabang_id);
         }
 
         $laporans = $query->latest()->paginate(15);
@@ -34,25 +28,20 @@ class LaporanController extends Controller
     {
         $this->pastikanPusat();
 
-        $jadwalAudits = JadwalAudit::where('status', 'selesai')
-            ->whereDoesntHave('laporan')
-            ->get();
+        $cabangs = Cabang::where('aktif', true)->orderBy('nama_cabang')->get();
+        $ras     = User::whereHas('role', fn($q) => $q->where('kode_role', 'RA'))->get();
 
-        return view('laporan.create', compact('jadwalAudits'));
+        return view('laporan.create', compact('cabangs', 'ras'));
     }
 
     public function store(StoreLaporanRequest $request)
     {
         $this->pastikanPusat();
 
-        $validated = $request->validated();
+        $validated                = $request->validated();
         $validated['dibuat_oleh'] = Auth::id();
 
-        $laporan = Laporan::create($validated + ['status' => $validated['status'] ?? 'draft']);
-
-        // Catatan: pembuatan file PDF/DOCX otomatis akan didelegasikan ke
-        // App\Services\LaporanGeneratorService (belum dibuat sesuai permintaan)
-        // atau dijalankan lewat App\Jobs\GenerateLaporanJob secara async.
+        $laporan = Laporan::create($validated);
 
         return redirect()
             ->route('laporan.show', $laporan)
@@ -63,15 +52,11 @@ class LaporanController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->isCabang()) {
-            $laporan->loadMissing('jadwalAudit');
-
-            if ($laporan->jadwalAudit->cabang_id !== $user->cabang_id) {
-                abort(403, 'Anda tidak memiliki akses ke laporan cabang lain.');
-            }
+        if ($user->isCabang() && $laporan->cabang_id !== $user->cabang_id) {
+            abort(403, 'Anda tidak memiliki akses ke laporan cabang lain.');
         }
 
-        $laporan->load(['jadwalAudit.cabang', 'jadwalAudit.bidang', 'pembuat']);
+        $laporan->load(['cabang', 'ra', 'pembuat']);
 
         return view('laporan.show', compact('laporan'));
     }
@@ -80,17 +65,17 @@ class LaporanController extends Controller
     {
         $this->pastikanPusat();
 
-        return view('laporan.edit', compact('laporan'));
+        $cabangs = Cabang::orderBy('nama_cabang')->get();
+        $ras     = User::whereHas('role', fn($q) => $q->where('kode_role', 'RA'))->get();
+
+        return view('laporan.edit', compact('laporan', 'cabangs', 'ras'));
     }
 
     public function update(StoreLaporanRequest $request, Laporan $laporan)
     {
         $this->pastikanPusat();
 
-        $validated = $request->validated();
-        unset($validated['dibuat_oleh']);
-
-        $laporan->update($validated);
+        $laporan->update($request->validated());
 
         return redirect()
             ->route('laporan.show', $laporan)

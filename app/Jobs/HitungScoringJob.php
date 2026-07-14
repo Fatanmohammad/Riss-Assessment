@@ -38,13 +38,12 @@ class HitungScoringJob implements ShouldQueue
         );
     }
 
-    private function tentukanKategoriRisiko(float $persentase): string
+    private function tentukanKategoriRisiko(float $totalSkor): string
     {
         return match (true) {
-            $persentase >= 85 => 'rendah',
-            $persentase >= 65 => 'sedang',
-            $persentase >= 40 => 'tinggi',
-            default            => 'sangat_tinggi',
+            $totalSkor >= 85 => 'low',
+            $totalSkor >= 65 => 'medium',
+            default          => 'high',
         };
     }
 }

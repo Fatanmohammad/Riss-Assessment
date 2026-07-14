@@ -14,12 +14,11 @@ class StoreLaporanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'jadwal_audit_id'      => ['required', 'exists:jadwal_audits,id'],
-            'dibuat_oleh'          => ['required', 'exists:users,id'],
-            'judul_laporan'        => ['required', 'string', 'max:255'],
-            'ringkasan_eksekutif'  => ['nullable', 'string'],
-            'status'               => ['nullable', 'in:draft,final,dikirim'],
-            'tanggal_terbit'       => ['nullable', 'date'],
+            'jenis'     => ['required', 'in:bulanan,triwulan'],
+            'periode'   => ['required', 'string', 'max:20'],
+            'cabang_id' => ['nullable', 'exists:cabangs,id'],
+            'ra_id'     => ['nullable', 'exists:users,id'],
+            'file_path' => ['nullable', 'string'],
         ];
     }
 }

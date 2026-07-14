@@ -23,19 +23,15 @@ class GenerateLaporanJob implements ShouldQueue
 
     public function handle(): void
     {
-        $this->laporan->loadMissing('jadwalAudit.kkas.temuan', 'jadwalAudit.cabang', 'jadwalAudit.bidang');
+        $this->laporan->loadMissing('cabang', 'ra', 'pembuat');
 
-        // Catatan: proses penyusunan file PDF/DOCX sebenarnya akan
-        // didelegasikan ke App\Services\LaporanGeneratorService
-        // (belum dibuat sesuai permintaan). Job ini menyiapkan alurnya:
+        // Proses generate file PDF/DOCX akan didelegasikan ke
+        // App\Services\LaporanGeneratorService:
         //
         // $filePath = app(\App\Services\LaporanGeneratorService::class)
         //     ->generate($this->laporan);
         //
-        // $this->laporan->update([
-        //     'file_path' => $filePath,
-        //     'status'    => 'final',
-        // ]);
+        // $this->laporan->update(['file_path' => $filePath]);
     }
 
     public function failed(\Throwable $exception): void
