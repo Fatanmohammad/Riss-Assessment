@@ -24,23 +24,15 @@ class HitungScoringJob implements ShouldQueue
 
     public function handle(): void
     {
-        $this->kka->loadMissing('jawaban', 'pertanyaan');
+        $this->kka->loadMissing('jawaban');
 
-        // Catatan: perhitungan detail sebaiknya didelegasikan ke
-        // App\Services\ScoringEngineService (belum dibuat sesuai permintaan).
-        // Berikut adalah alur job-nya, logika skor final menyusul.
-
-        $totalSkor    = $this->kka->jawaban->sum('skor');
-        $skorMaksimal = $this->kka->pertanyaan->sum('bobot');
-        $persentase   = $skorMaksimal > 0 ? round(($totalSkor / $skorMaksimal) * 100, 2) : 0;
+        $totalSkor = $this->kka->jawaban->sum('nilai');
 
         Scoring::updateOrCreate(
             ['kka_id' => $this->kka->id],
             [
                 'total_skor'      => $totalSkor,
-                'skor_maksimal'   => $skorMaksimal,
-                'persentase'      => $persentase,
-                'kategori_risiko' => $this->tentukanKategoriRisiko($persentase),
+                'kategori_risiko' => $this->tentukanKategoriRisiko($totalSkor),
                 'dihitung_pada'   => now(),
             ]
         );

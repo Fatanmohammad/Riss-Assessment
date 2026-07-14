@@ -22,13 +22,13 @@ class TindakLanjutPolicy
             return true;
         }
 
-        if ($tindakLanjut->penanggung_jawab_id === $user->id) {
+        if ($tindakLanjut->checker_id === $user->id) {
             return true;
         }
 
-        $tindakLanjut->loadMissing('temuan.kka.jadwalAudit');
+        $tindakLanjut->loadMissing('flag.kka.jadwalAudit');
 
-        return $tindakLanjut->temuan->kka->jadwalAudit->cabang_id === $user->cabang_id;
+        return $tindakLanjut->flag->kka->jadwalAudit->cabang_id === $user->cabang_id;
     }
 
     /**
@@ -50,7 +50,7 @@ class TindakLanjutPolicy
             return true;
         }
 
-        return $tindakLanjut->penanggung_jawab_id === $user->id
+        return $tindakLanjut->checker_id === $user->id
             && $tindakLanjut->status !== 'selesai';
     }
 

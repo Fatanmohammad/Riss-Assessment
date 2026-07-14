@@ -13,18 +13,14 @@ class FlagKejanggalan extends Model
 
     protected $fillable = [
         'kka_id',
-        'temuan_id',
-        'jenis_kejanggalan',   // hasil deteksi AnomaliDetectorService
         'deskripsi',
-        'tingkat_kepercayaan', // confidence score dari sistem deteksi
-        'status',              // baru, diverifikasi, ditolak
-        'diverifikasi_oleh',   // FK ke users
-        'diverifikasi_pada',
+        'tingkat',    // rendah, sedang, tinggi
+        'status',     // belum_ditindaklanjuti, ditindaklanjuti
+        'terdeteksi_pada',
     ];
 
     protected $casts = [
-        'diverifikasi_pada'   => 'datetime',
-        'tingkat_kepercayaan' => 'decimal:2',
+        'terdeteksi_pada' => 'datetime',
     ];
 
     public function kka()
@@ -32,13 +28,8 @@ class FlagKejanggalan extends Model
         return $this->belongsTo(Kka::class);
     }
 
-    public function temuan()
+    public function tindakLanjut()
     {
-        return $this->belongsTo(Temuan::class);
-    }
-
-    public function verifikator()
-    {
-        return $this->belongsTo(User::class, 'diverifikasi_oleh');
+        return $this->hasMany(TindakLanjut::class, 'flag_id');
     }
 }

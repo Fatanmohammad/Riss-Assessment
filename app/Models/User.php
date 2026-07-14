@@ -46,25 +46,14 @@ class User extends Authenticatable
         return $this->belongsTo(Cabang::class);
     }
 
-    public function jadwalAuditSebagaiKetua()
+    public function jadwalAuditDibuat()
     {
-        return $this->hasMany(JadwalAudit::class, 'ketua_tim_id');
-    }
-
-    public function jadwalAuditSebagaiAnggota()
-    {
-        return $this->belongsToMany(JadwalAudit::class, 'jadwal_audit_user')
-            ->withTimestamps();
+        return $this->hasMany(JadwalAudit::class, 'dibuat_oleh');
     }
 
     public function kkaDibuat()
     {
-        return $this->hasMany(Kka::class, 'auditor_id');
-    }
-
-    public function kkaDireview()
-    {
-        return $this->hasMany(Kka::class, 'checker_id');
+        return $this->hasMany(Kka::class, 'ra_id');
     }
 
     /**

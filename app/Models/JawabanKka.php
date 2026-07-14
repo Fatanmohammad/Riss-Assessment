@@ -13,11 +13,9 @@ class JawabanKka extends Model
 
     protected $fillable = [
         'kka_id',
-        'pertanyaan_kka_id',
-        'auditor_id',
-        'jawaban',         // isi jawaban (ya/tidak, teks, skor, dll)
-        'skor',
-        'lampiran_path',   // bukti/dokumen pendukung
+        'pertanyaan_id',
+        'jawaban',
+        'nilai',
         'keterangan',
     ];
 
@@ -28,11 +26,6 @@ class JawabanKka extends Model
 
     public function pertanyaan()
     {
-        return $this->belongsTo(PertanyaanKka::class, 'pertanyaan_kka_id');
-    }
-
-    public function auditor()
-    {
-        return $this->belongsTo(User::class, 'auditor_id');
+        return $this->belongsTo(PertanyaanKka::class, 'pertanyaan_id');
     }
 }

@@ -12,22 +12,24 @@ class Laporan extends Model
     protected $table = 'laporans';
 
     protected $fillable = [
-        'jadwal_audit_id',
-        'dibuat_oleh',      // FK ke users
-        'judul_laporan',
-        'ringkasan_eksekutif',
-        'file_path',        // hasil generate PDF/DOCX
-        'status',           // draft, final, dikirim
-        'tanggal_terbit',
+        'jenis',            // bulanan, triwulan
+        'periode',
+        'cabang_id',
+        'ra_id',
+        'file_path',
+        'dibuat_oleh',
     ];
 
-    protected $casts = [
-        'tanggal_terbit' => 'date',
-    ];
+    protected $casts = [];
 
-    public function jadwalAudit()
+    public function cabang()
     {
-        return $this->belongsTo(JadwalAudit::class);
+        return $this->belongsTo(Cabang::class);
+    }
+
+    public function ra()
+    {
+        return $this->belongsTo(User::class, 'ra_id');
     }
 
     public function pembuat()

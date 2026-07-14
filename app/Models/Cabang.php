@@ -14,22 +14,27 @@ class Cabang extends Model
     protected $fillable = [
         'kode_cabang',
         'nama_cabang',
+        'tipe',    // induk, anak
+        'parent_id',
         'alamat',
-        'kota',
-        'status', // aktif / nonaktif
+        'aktif',
     ];
 
-    /**
-     * Semua user (pegawai) yang berada di cabang ini.
-     */
+    public function parent()
+    {
+        return $this->belongsTo(Cabang::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Cabang::class, 'parent_id');
+    }
+
     public function users()
     {
         return $this->hasMany(User::class);
     }
 
-    /**
-     * Jadwal audit yang dilakukan di cabang ini.
-     */
     public function jadwalAudits()
     {
         return $this->hasMany(JadwalAudit::class);

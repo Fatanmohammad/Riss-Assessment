@@ -21,9 +21,7 @@ class LaporanPolicy
             return true;
         }
 
-        $laporan->loadMissing('jadwalAudit');
-
-        return $laporan->jadwalAudit->cabang_id === $user->cabang_id;
+        return $laporan->cabang_id === $user->cabang_id;
     }
 
     /**

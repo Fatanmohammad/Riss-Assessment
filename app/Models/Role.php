@@ -13,9 +13,7 @@ class Role extends Model
 
     protected $fillable = [
         'kode_role',
-        'nama_role',   // Staf Cabang, Reviewer SKAI, Kepala SKAI, Admin
-        'lingkup',     // 'pusat' (SKAI, mereview/mengevaluasi semua cabang) atau 'cabang' (input mandiri)
-        'deskripsi',
+        'nama_role',
     ];
 
     /**
@@ -32,14 +30,11 @@ class Role extends Model
      */
     public function isPusat(): bool
     {
-        return $this->lingkup === 'pusat';
+        return in_array($this->kode_role, ['CHECKER', 'ADMIN_SKAI']);
     }
 
-    /**
-     * True jika role ini berperan sebagai staf cabang (hanya input data cabangnya sendiri).
-     */
     public function isCabang(): bool
     {
-        return $this->lingkup === 'cabang';
+        return $this->kode_role === 'RA';
     }
 }

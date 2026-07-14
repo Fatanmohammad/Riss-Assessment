@@ -43,12 +43,9 @@ class KkaPolicy
      */
     public function update(User $user, Kka $kka): bool
     {
-        return $kka->auditor_id === $user->id && $kka->status === 'draft';
+        return $kka->ra_id === $user->id && $kka->status === 'draft';
     }
 
-    /**
-     * Sama seperti update: hanya pembuat, hanya saat draft.
-     */
     public function delete(User $user, Kka $kka): bool
     {
         return $this->update($user, $kka);
@@ -69,7 +66,7 @@ class KkaPolicy
      */
     public function ajukan(User $user, Kka $kka): bool
     {
-        return $kka->auditor_id === $user->id && $kka->status === 'draft';
+        return $kka->ra_id === $user->id && $kka->status === 'draft';
     }
 
     /**

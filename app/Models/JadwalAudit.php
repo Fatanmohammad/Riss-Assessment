@@ -14,12 +14,11 @@ class JadwalAudit extends Model
     protected $fillable = [
         'cabang_id',
         'bidang_id',
-        'ketua_tim_id',   // FK ke users
-        'periode_audit',
+        'periode',
         'tanggal_mulai',
         'tanggal_selesai',
-        'status',         // draft, berjalan, selesai, dibatalkan
-        'catatan',
+        'status',         // terjadwal, berlangsung, selesai, batal
+        'dibuat_oleh',
     ];
 
     protected $casts = [
@@ -37,18 +36,9 @@ class JadwalAudit extends Model
         return $this->belongsTo(Bidang::class);
     }
 
-    public function ketuaTim()
+    public function dibuatOleh()
     {
-        return $this->belongsTo(User::class, 'ketua_tim_id');
-    }
-
-    /**
-     * Anggota tim audit (jika menggunakan tabel pivot jadwal_audit_user).
-     */
-    public function anggotaTim()
-    {
-        return $this->belongsToMany(User::class, 'jadwal_audit_user')
-            ->withTimestamps();
+        return $this->belongsTo(User::class, 'dibuat_oleh');
     }
 
     public function kkas()

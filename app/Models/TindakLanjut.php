@@ -11,8 +11,21 @@ class TindakLanjut extends Model
 
     protected $table = 'tindak_lanjuts';
 
-    public function temuan()
+    protected $fillable = [
+        'flag_id',
+        'checker_id',
+        'keterangan',
+        'bukti_fisik',
+        'status',     // proses, selesai
+    ];
+
+    public function flag()
     {
-        return $this->belongsTo(Temuan::class);
+        return $this->belongsTo(FlagKejanggalan::class, 'flag_id');
+    }
+
+    public function checker()
+    {
+        return $this->belongsTo(User::class, 'checker_id');
     }
 }

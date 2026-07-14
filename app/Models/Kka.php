@@ -13,18 +13,15 @@ class Kka extends Model
 
     protected $fillable = [
         'jadwal_audit_id',
-        'auditor_id',      // FK ke users, pembuat KKA (maker)
-        'checker_id',      // FK ke users, pereview (checker)
-        'judul',
-        'status',          // draft, diajukan, direview, disetujui, ditolak
-        'catatan_review',
+        'cabang_id',
+        'bidang_id',
+        'ra_id',
+        'status',             // draft, submitted, direview, selesai
         'tanggal_pengisian',
-        'tanggal_review',
     ];
 
     protected $casts = [
-        'tanggal_pengisian' => 'date',
-        'tanggal_review'    => 'date',
+        'tanggal_pengisian' => 'datetime',
     ];
 
     public function jadwalAudit()
@@ -32,19 +29,19 @@ class Kka extends Model
         return $this->belongsTo(JadwalAudit::class);
     }
 
-    public function auditor()
+    public function ra()
     {
-        return $this->belongsTo(User::class, 'auditor_id');
+        return $this->belongsTo(User::class, 'ra_id');
     }
 
-    public function checker()
+    public function cabang()
     {
-        return $this->belongsTo(User::class, 'checker_id');
+        return $this->belongsTo(Cabang::class);
     }
 
-    public function pertanyaan()
+    public function bidang()
     {
-        return $this->hasMany(PertanyaanKka::class);
+        return $this->belongsTo(Bidang::class);
     }
 
     public function jawaban()

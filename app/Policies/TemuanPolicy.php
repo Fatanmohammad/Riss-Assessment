@@ -45,7 +45,9 @@ class TemuanPolicy
             return true;
         }
 
-        return $temuan->auditor_id === $user->id && $temuan->status === 'terbuka';
+        $temuan->loadMissing('kka');
+
+        return $temuan->kka->ra_id === $user->id && $temuan->status === 'baru';
     }
 
     public function delete(User $user, Temuan $temuan): bool
