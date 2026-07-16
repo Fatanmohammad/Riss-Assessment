@@ -15,10 +15,12 @@ class TindakLanjutController extends Controller
         $query = TindakLanjut::with(['flag.kka.jadwalAudit.cabang', 'checker']);
 
         if ($user->isCabang()) {
-            $query->where('checker_id', $user->id)
-                ->orWhereHas('flag.kka.jadwalAudit', function ($q) use ($user) {
-                    $q->where('cabang_id', $user->cabang_id);
-                });
+            $query->where(function ($q) use ($user) {
+                $q->where('checker_id', $user->id)
+                    ->orWhereHas('flag.kka.jadwalAudit', function ($q) use ($user) {
+                        $q->where('cabang_id', $user->cabang_id);
+                    });
+            });
         }
 
         $tindakLanjuts = $query->latest()->paginate(15);

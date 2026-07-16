@@ -8,12 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('cabangs', function (Blueprint $table) {
+        Schema::create('anak_cabangs', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_cabang')->unique();
-            $table->string('nama_cabang');
-            $table->enum('tipe', ['kcu', 'biasa'])->default('biasa');
-            $table->unsignedTinyInteger('slot_ra')->default(1); // KCU=2, biasa=1
+            $table->foreignId('cabang_id')->constrained('cabangs')->cascadeOnDelete();
+            $table->string('kode_anak_cabang')->unique();
+            $table->string('nama_anak_cabang');
             $table->string('alamat')->nullable();
             $table->boolean('aktif')->default(true);
             $table->timestamps();
@@ -22,6 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('cabangs');
+        Schema::dropIfExists('anak_cabangs');
     }
 };

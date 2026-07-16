@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('role_id')->nullable()->after('id')->constrained('roles')->nullOnDelete();
             $table->foreignId('cabang_id')->nullable()->after('role_id')->constrained('cabangs')->nullOnDelete();
+            $table->foreignId('atasan_id')->nullable()->after('cabang_id')->constrained('users')->nullOnDelete(); // Kabag RA langsung
         });
     }
 
@@ -19,7 +20,8 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['role_id']);
             $table->dropForeign(['cabang_id']);
-            $table->dropColumn(['role_id', 'cabang_id']);
+            $table->dropForeign(['atasan_id']);
+            $table->dropColumn(['role_id', 'cabang_id', 'atasan_id']);
         });
     }
 };

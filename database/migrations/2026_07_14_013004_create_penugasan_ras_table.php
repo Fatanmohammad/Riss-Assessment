@@ -8,22 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('kkas', function (Blueprint $table) {
+        Schema::create('penugasan_ras', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('penugasan_id')->constrained('penugasan_ras')->cascadeOnDelete();
+            $table->foreignId('audit_plan_id')->constrained('audit_plans')->cascadeOnDelete();
+            $table->foreignId('ra_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('cabang_id')->constrained('cabangs')->cascadeOnDelete();
             $table->foreignId('anak_cabang_id')->nullable()->constrained('anak_cabangs')->nullOnDelete();
             $table->foreignId('bidang_id')->constrained('bidangs')->cascadeOnDelete();
-            $table->foreignId('ra_id')->constrained('users')->cascadeOnDelete();
-            $table->enum('status', ['draft', 'submitted', 'revisi', 'approved_kabag', 'approved_kadiv'])->default('draft');
-            $table->timestamp('tanggal_pengisian')->nullable();
-            $table->boolean('terkunci')->default(false);                               // terkunci setelah Kadiv approve
+            $table->string('periode');                                                         // contoh: 2026-07
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->enum('status', ['terjadwal', 'berlangsung', 'selesai', 'batal'])->default('terjadwal');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('kkas');
+        Schema::dropIfExists('penugasan_ras');
     }
 };

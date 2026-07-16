@@ -14,20 +14,15 @@ class Cabang extends Model
     protected $fillable = [
         'kode_cabang',
         'nama_cabang',
-        'tipe',    // induk, anak
-        'parent_id',
+        'tipe',       // kcu, biasa
+        'slot_ra',    // 1 atau 2
         'alamat',
         'aktif',
     ];
 
-    public function parent()
+    public function anakCabangs()
     {
-        return $this->belongsTo(Cabang::class, 'parent_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(Cabang::class, 'parent_id');
+        return $this->hasMany(AnakCabang::class);
     }
 
     public function users()
@@ -38,5 +33,10 @@ class Cabang extends Model
     public function jadwalAudits()
     {
         return $this->hasMany(JadwalAudit::class);
+    }
+
+    public function isKcu(): bool
+    {
+        return $this->tipe === 'kcu';
     }
 }

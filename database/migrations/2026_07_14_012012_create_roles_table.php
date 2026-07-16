@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_role')->unique(); // RA, CHECKER, ADMIN_SKAI
-            $table->string('nama_role'); // Resident Auditor, Checker/Supervisor, Admin SKAI
+            $table->string('kode_role')->unique(); // RA, KABAG_RA, KADIV_SKAI, PIMSIE, ADMIN
+            $table->string('nama_role');
             $table->timestamps();
         });
     }

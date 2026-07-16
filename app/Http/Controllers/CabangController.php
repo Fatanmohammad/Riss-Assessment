@@ -23,7 +23,9 @@ class CabangController extends Controller
     {
         $this->pastikanPusat();
 
-        return view('cabang.create');
+        $indukList = Cabang::where('tipe', 'induk')->orderBy('nama_cabang')->get();
+
+        return view('cabang.create', compact('indukList'));
     }
 
     public function store(Request $request)

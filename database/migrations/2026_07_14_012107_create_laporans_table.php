@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('laporans', function (Blueprint $table) {
             $table->id();
-            $table->enum('jenis', ['bulanan', 'triwulan']);
-            $table->string('periode'); // contoh: 2026-07 atau 2026-Q3
+            $table->enum('jenis', ['bulanan_ra', 'evaluasi_unit', 'rekap_cabang']);    // 3 jenis laporan
+            $table->string('periode');                                                  // contoh: 2026-07
             $table->foreignId('cabang_id')->nullable()->constrained('cabangs')->nullOnDelete();
             $table->foreignId('ra_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('file_path')->nullable();

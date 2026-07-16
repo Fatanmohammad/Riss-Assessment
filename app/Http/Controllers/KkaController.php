@@ -6,7 +6,6 @@ use App\Http\Requests\StoreKkaRequest;
 use App\Models\JadwalAudit;
 use App\Models\JawabanKka;
 use App\Models\Kka;
-use App\Models\PertanyaanKka;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
